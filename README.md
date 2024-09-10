@@ -4,27 +4,26 @@ A lo largo de este proyecto, se introducen los comandos originados para el anál
 
 ## Índice
 
-1. [Análisis de NCL1, muestras obtenidas de Microarray](#Análisis-NCL1)
+1. [Análisis de NCL1, muestras obtenidas de Microarray]
    
-   1.1 [Normalización de los resultados](#Normalización-de-los-resultados)
+   1.1 [Normalización de los resultados]
    
-   1.2 [Análisis de la expresión diferencial](#Análisis-de-la-expresión-diferencial)
+   1.2 [Análisis de la expresión diferencial]
 
-  1.3 [Diagrama de Venn](#Diagrama-de-Venn)
+   1.3 [Diagrama de Venn]
 
-  1.4 [Enriquecimiento funcional](#Enriquecimiento-funcional)
+   1.4 [Enriquecimiento funcional]
 
   
-2. [Análisis de NCL2, muestras obtenidas de RNA-Seq](#Análisis-NCL2)
+2. [Análisis de NCL2, muestras obtenidas de RNA-Seq]
    
-  2.1 [Obtención y ordenamiento de los datos](#Obtención-y-ordenamiento-de-los-datos)
-   
-   2.2 [Análisis de la expresión diferencial y filtrado de genes](#Análisis-de-la-expresión-diferencial-y-filtrado-de-genes)
+   2.1 [Obtención y ordenamiento de los datos]
 
-  2.3 [Diagrama de Venn](#Diagrama-de-Venn)
+   2.2 [Análisis de la expresión diferencial y filtrado de genes]
 
-  2.4 [Enriquecimiento funcional](#Enriquecimiento-funcional)
+   2.3 [Diagrama de Venn]
 
+   2.4 [Enriquecimiento funcional]
 ## 1. Análisis NCL1
 
 ### 1.1. Normalización de los resultados

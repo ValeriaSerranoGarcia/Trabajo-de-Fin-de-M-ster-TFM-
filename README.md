@@ -1,4 +1,4 @@
-# Trabajo de Fin de Master (TFM).
+# Trabajo de Fin de Master (TFM)
 
 A lo largo de este proyecto, se introducen los comandos originados para el análisis de las muestras GSE7768 (NCL1) y GSE123509 (NCL2). Se emplean diferentes procedimientos dependiendo de si la técnica empleada para la obtención de los datos ha sido Microarray o RNA-Seq. 
 

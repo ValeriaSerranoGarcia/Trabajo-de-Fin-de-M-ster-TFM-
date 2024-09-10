@@ -567,7 +567,7 @@ genes_comunes <- intersect(N_T$X, NCb_TCb$X)
 genes_comunes
 ```
 
-## 2.4 Enriquecimiento funcional.
+### 2.4 Enriquecimiento funcional.
 
 ```r
 #Fijamos el organismo con el que vamos a trabajar

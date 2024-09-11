@@ -55,7 +55,7 @@ library(dplyr)
 Una vez introducido las librerías necesarias, a continuación vamos a cargar los resultados y a normalizarlos. Con ello conseguiremos modelar los archivos que contienen los datos de estudio para poder realizar el análisis de la expresión diferencial. 
 
 ```r
-# 1. Introducimos directorios y cargamos los archivos. 
+# 1. Introducción de directorios y cargar archivos. 
 setwd("~/Documents") #Los archivos deben estar introducidos en el directorio de Documents. Si están en otra ubicación, se deberá cambiar este comando a: setwd("C:/ruta_absoluta_del_directorio")
 celFiles<-list.celfiles() #Cargamos los archivos .cel que hemos descargado.
 affyRaw<-read.celfiles(celFiles) #Leemos los archivos. 
@@ -67,8 +67,8 @@ geneSummaries <- annotateEset(eset,mouse4302.db)
 
 # 3. Preparación de los resultados para el análisis de expresión diferencial.
 target_table<-read.csv("target_table.csv",sep=";") #Introducimos nuestra matriz target_table que hemos creado recopilando los datos del estudio. Esta tabla se encuentra disponible en los archivos del Github.
-groups<-target_table[,3] #Introducimos la información de mutante y KO de la target_table en mi variable groups. 
-design<-model.matrix(~factor(groups)) #Introducidmos los grupos en dicha matriz.
+groups<-target_table[,3] #Introducimos la información de mutante y KO de la target_table en la variable groups. 
+design<-model.matrix(~factor(groups)) #Introducimos los grupos en dicha matriz.
 colnames(design)<-c("WT","WTvsKO") #Cambiamos el título de la matriz que representa las condiciones que se van a comparar. 
 design #Observamos nuestra matriz.
 ````
@@ -77,10 +77,10 @@ design #Observamos nuestra matriz.
 Para la realización del análisis de la expresión diferencial, debemos de establecer previamente las comparaciones que se quieren realizar. En este caso, al ser un análisis de expresión diferencial a lo largo del tiempo, debemos introducir las comparaciones a los tres, cinco y ocho meses. 
 
 ```r
-#Introducimos las muestras a estudiar y las comparaciones a realizar.
+#Introducción de muestras a comparar y definición de la comparación.
 lev<-c("KO.3mo","KO.3mo","KO.3mo","KO.5mo","KO.5mo","KO.5mo","KO.8mo","KO.8mo","KO.8mo","WT.3mo","WT.3mo","WT.3mo","WT.5mo","WT.5mo","WT.5mo","WT.8mo","WT.8mo","WT.8mo")
 design <- model.matrix(~0+lev)
-fit_t<-lmFit(geneSummaries,design) 
+fit_t<-lmFit(geneSummaries,design) # LmFit nos permite observar si existen diferencias en la expresión entre las condiciones estudiadas (WT vs KO) y los tiempos expuestos. 
 cont.dif <- makeContrasts(
   Dif3mo= (levKO.3mo)-(levWT.3mo),
   Dif5mo =(levKO.5mo)-(levWT.5mo),
@@ -90,7 +90,7 @@ cont.dif <- makeContrasts(
 
 # Analisis de la expresion diferencial
 fitime <- contrasts.fit(fit_t, cont.dif)
-fittime<- eBayes(fitime)
+fittime<- eBayes(fitime) #Identifica genes con expresión diferencial.
 log2_threshold <- log2(1.5) #Parámetro para realizar la expresión diferencial.
 fit_T<-topTable(fittime, adjust="BH", number=Inf) #Expresion diferencial de los genes en función del tiempo.
 res_time_def<-subset(fit_T,adj.P.Val<0.05 & (abs (Dif3mo)>log2_threshold | abs (Dif5mo)>log2_threshold | abs (Dif8mo)>log2_threshold))#Seleccionamos los genes que presenten un valor de p-value<0.05 y además estamos seleccionando aquellos cuyo valor absoluto sea mayor de 1. 
@@ -178,7 +178,7 @@ El análisis de enriquecimiento funcional permite establecer procesos biológico
 
 ```r
 # 1. Lectura de los datos y filtrado
-df = read.table("diferencial_5.txt", header=TRUE) #filtered_genes.tsv #Sustituir por diferencial_3.txt o diferencial_8.txt en caso de que se desee realizar el análisis a los tres u ocho meses respectivamente.  
+df = read.table("diferencial_5.txt", header=TRUE) #Sustituir por diferencial_3.txt o diferencial_8.txt en caso de que se desee realizar el análisis a los tres u ocho meses respectivamente.  
 log2_threshold <- log2(1.5)
 df = df %>% filter(abs(Dif5mo) > abs(log2_threshold) & P.Value < 0.05) #Realizamos un nuevo filtro para asegurarnos de que obtenemos los parámetros deseados. 
 
@@ -270,7 +270,6 @@ for (archivo in archivos) {
 }
 
 # 3. Crear un dataframe combinando los datos de cada archivo
-
 genes <- unique(unlist(lapply(lista_datos, function(x) x[, 1]))) # Extraer los nombres de genes unicos de todos los archivos
 
 # Crear un dataframe vacio con columnas para los genes y muestras
@@ -326,16 +325,16 @@ dir.create(paste0(comparison, "/graphs"), showWarnings = FALSE)
 df_counts_clean <- df_counts[complete.cases(df_counts), ]
 
 # Funcion
-sampleCondition <- group
+sampleCondition <- group #Asignamos las condiciones experimentales de las muestras a comparar.
 sampleTable <- data.frame(row.names = colnames(df_counts_clean), condition = sampleCondition)
-ddsHTSeq <- DESeqDataSetFromMatrix(countData = df_counts_clean, colData = sampleTable, design = ~condition)
-ddsHTSeq <- DESeq(ddsHTSeq)
+ddsHTSeq <- DESeqDataSetFromMatrix(countData = df_counts_clean, colData = sampleTable, design = ~condition)#Creamos las variables necesarias con los datos para realizar mi expresión diferencial.
+ddsHTSeq <- DESeq(ddsHTSeq) #Cálculo de los genes expresados diferencialmente.
 
 
-# Transformacion rlog
+# Transformacion rlog de los datos.
 ddsHTSeq.rld <- rlogTransformation(ddsHTSeq, blind = TRUE)
 
-# PCA
+# Representación de PCA para las muestras
 png(file = paste0(comparison, "/graphs/PCA.png"), width = 7*300, height = 5*300, res = 300)
 print(plotPCA(ddsHTSeq.rld, intgroup = "condition"))
 dev.off()
@@ -369,7 +368,7 @@ dir.create(comparison, showWarnings = FALSE)
 dir.create(paste0(comparison, "/graphs"), showWarnings = FALSE)
 
 # Funcion
-sampleCondition <- group
+sampleCondition <- group #Asignamos las condiciones experimentales.
 sampleTable <- data.frame(row.names = colnames(df_counts), condition = sampleCondition) #Tabla con información de las muestras.
 ddsHTSeq <- DESeqDataSetFromMatrix(countData = df_counts, colData = sampleTable, design = ~condition) #Creamos las variables necesarias con los datos para realizar mi expresión diferencial.
 ddsHTSeq <- DESeq(ddsHTSeq) #Realizamos la expresión diferencial. 
@@ -458,10 +457,6 @@ keep <- grep(condition1,colnames(df_counts))
 keep <- append(keep, grep(condition2,colnames(df_counts)))
 df_counts <- df_counts[ ,keep] #Seleccionamos las columnas que corresponden a las condiciones específicas y las añadimos junto con nuestro archivo de las muestras.
 
-##############
-### DESEQ2 ###
-##############
-
 # Directorio para los resultados
 dir.create(comparison, showWarnings = FALSE)
 dir.create(paste0(comparison, "/graphs"), showWarnings = FALSE)
@@ -541,10 +536,11 @@ suppressWarnings(ggsave(paste0(comparison, "/graphs/volcano_plot.png"), plot = p
 ### 2.3 Diagrama de Venn.
 
 ```r
+#Definición de las variables, en este caso definimos las variables asociadas a los genes que se expresan diferencialmente en el cerebelo y en el mesencéfalo / prosencéfalo. Se recomienda en este caso crear un directorio y poner los dos archivos filtered_genes en este. En este caso, hemos definido los archivos de forma diferente para identificar cual pertenece al cerebelo y cual pertenece al mesencéfalo / prosencéfalo.
 N_T = read.table("filtered_genesNT.tsv",header = TRUE, sep = "\t")
 NCb_TCb = read.table("filtered_genesCb.tsv",header = TRUE, sep = "\t")
 
-#Plot
+#Representación del diagrama.
 venn.plot <- venn.diagram(
   x = list(C = N_T$X, D = NCb_TCb$X),
   category.names = c("M/F", "Cb"),
@@ -554,7 +550,7 @@ venn.plot <- venn.diagram(
   output = TRUE
 )
 
-# Visualizar el diagrama
+# Visualización del diagrama
 grid.draw(venn.plot)
 
 # Guardar el diagrama de Venn en un archivo PNG
@@ -562,7 +558,7 @@ png("diagrama_venn.png", width = 2000, height = 2000, res = 300)
 grid.draw(venn.plot)
 dev.off()
 
-#Genes comunes
+#Obtención de los genes comunes resultantes de la intersección de la gráfica.
 genes_comunes <- intersect(N_T$X, NCb_TCb$X)
 genes_comunes
 ```
@@ -570,29 +566,29 @@ genes_comunes
 ### 2.4 Enriquecimiento funcional.
 
 ```r
-#Fijamos el organismo con el que vamos a trabajar
+#Se fija el organismo con el que se va a trabajar, en el caso de este estudio, Mus Musculus,
 organism = "org.Mm.eg.db" #Mus musculus.
 library(organism, character.only = TRUE)
 
-#Instalamos directorio
+#Se introduce el directorio de trabajo.
 setwd("C:/Users/valer/Documents/GSE123509_RAW/NMF_vs_TMF") #Si queremos que el análisis sea del cerebelo debemos de introducir "C:/../Documents/GSE123509_RAW/NCb_vs_TCb".
 
-#Realizamos la operaci?n de lecturas de valores.
+#Lectura de los genes expresados diferencialmente. 
 df = read.table("filtered_genes.tsv", header=TRUE)  
 
-# we want the log2 fold change 
+# Se selecciona el valor de expresión de la lista de genes. 
 original_gene_list <- df$log2FoldChange
 
-# name the vector
+# Se seleccionan los nombres de los genes asociados a nuestro archivo de genes expresados diferencialmente. 
 names(original_gene_list) <- df$X
 
-# omit any NA values 
+# Se eliminan los valores NA, para evitar problemas en el análisis. 
 gene_list<-na.omit(original_gene_list)
 
-# sort the list in decreasing order (required for clusterProfiler)
+# Se ordena la lista de genes, necesaria para realizar el análisis.
 gene_list = sort(gene_list, decreasing = TRUE)
 
-#Formamos nuestra table
+#Creación y ejecución del análisis de expresión diferencial. 
 gse <- gseGO(geneList=gene_list, 
              ont ="ALL", 
              keyType = "ALIAS", 
